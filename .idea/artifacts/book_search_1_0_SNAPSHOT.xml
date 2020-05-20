@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="book-search-1.0-SNAPSHOT">
+    <output-path>E:\kotlin\book-search\build\libs</output-path>
+    <root id="archive" name="book-search-1.0-SNAPSHOT.jar">
+      <element id="module-output" name="org.example.book-search.main" />
+    </root>
+  </artifact>
+</component>
