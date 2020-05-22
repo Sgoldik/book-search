@@ -1,34 +1,100 @@
-package component
+package components
 
+import data.*
+import hoc.withDisplayName
+import kotlinext.js.getOwnPropertyNames
+import kotlinx.html.id
+import kotlinx.html.js.onClickFunction
+import org.w3c.dom.HTMLInputElement
 import react.*
 import react.dom.*
-import kotlinx.html.js.onClickFunction
 import org.w3c.dom.events.Event
-import data.*
+import react.router.dom.navLink
+import kotlin.browser.document
+import kotlin.browser.window
+
+
+interface BookTableItemProps : RProps {
+    var books: Map<Int, Book>
+    var authors: Map<Int, Author>
+    var genres: Map<Int, Genre>
+}
+
+fun fBookTableItem () =
+    functionalComponent<BookTableItemProps> { props ->
+        props.books.map { book ->
+            tr {
+                td ("book-image"){
+                    img ("img", book.value.image, "book-image-pic") {
+
+                    }
+                }
+                td {
+                    + book.value.name
+                }
+                td {
+                    + props.authors.getValue(book.value.author).toString()
+                }
+                td {
+                    + book.value.created
+                }
+                td {
+                    + props.genres.getValue(book.value.genre).toString()
+                }
+                td {
+                    navLink("/books/${book.key}") {
+                        button(classes = "book-button") {
+                            +"Подробнее"
+                        }
+                    }
+                }
+
+            }
+
+        }
+    }
+
+fun RBuilder.bookTableItem(
+    books: Map<Int, Book>,
+    authors: Map<Int, Author>,
+    genres: Map<Int, Genre>
+) = child(
+    withDisplayName("Table Item", fBookTableItem())
+) {
+    attrs.books = books
+    attrs.authors = authors
+    attrs.genres = genres
+}
 
 interface BookProps : RProps {
-    var book: Book
-    var author: Int
+    var book: Pair<Int, Book>
+    var author: Author
+    var genre: Genre
+    var addFav: (Event) -> Unit
+    var isFav: Boolean
 }
 
 val fBook =
     functionalComponent<BookProps> { props ->
         div ("book-more"){
             div ("book-more-img") {
-                img (props.book.name, props.book.image, classes = "book-more-pic") {}
+                img (props.book.second.name, props.book.second.image, classes = "book-more-pic") {}
             }
             div ("book-more-desc") {
                 div ("book-more-desc-item"){
-                    + "Автор: ${props.book.author.toString()}"
+                    + "Автор: ${props.author.toString()}"
                 }
                 div ("book-more-desc-item") {
-                    + "Жанр: ${props.book.genre.toString()}"
+                    + "Жанр: ${props.genre.name}"
                 }
                 div ("book-more-desc-item") {
-                    + "Дата издания: ${props.book.created}"
+                    + "Дата издания: ${props.book.second.created}"
                 }
                 button (classes = "book-button"){
-                    + "Добавить в избранное"
+                    if (props.isFav) +"Удалить из избранного" else +"Добавить в избранное"
+                    console.log(props.isFav)
+                    attrs.onClickFunction = props.addFav
+
                 }
             }
 
@@ -36,9 +102,39 @@ val fBook =
     }
 
 fun RBuilder.book(
-    book: Book,
-    author: Int
+    book: Pair<Int, Book>,
+    author: Author,
+    genre: Genre,
+    addFav: (Event) -> Unit,
+    isFav: Boolean
 ) = child(fBook) {
     attrs.book = book
     attrs.author = author
+    attrs.genre = genre
+    attrs.addFav = addFav
+    attrs.isFav = isFav
 }
+
+interface BookEditProps : RProps {
+    var book: Pair<Int, Book>
+    var onClick: (Book) -> Unit
+}
+
+val fBookEdit =
+    functionalComponent<BookEditProps> { props ->
+        span {
+            input() {
+                attrs.id = "lessonEdit${props.book.first}"
+                attrs.defaultValue = props.book.second.name
+            }
+            button {
+                +"Save"
+                attrs.onClickFunction = {
+                    val inputElement = document
+                        .getElementById("lessonEdit${props.book.first}")
+                            as HTMLInputElement
+                    props.onClick(Book(inputElement.value, 0, "", "", 0))
+                }
+            }
+        }
+    }

@@ -1,27 +1,80 @@
-package redux
-
 import data.*
+import redux.*
 
-fun changeReducer(state: State, action: RAction) =
+fun booksReducer(state: BooksState, action: RAction, newId: Int = -1) =
     when (action) {
-        is AddAuthor -> State (
-            state.books,
-            state.authors.plus(Author(action.name, action.surname, "")),
-            state.genres,
-            state.favs
-        )
-        is EditAuthor -> State (
-            state.books,
-            state.authors.mapIndexed { indexAuthor, author ->
-                if (indexAuthor == action.index) {
-                    Author(action.firstname, action.surname, "")
-                } else
-                    author
-
-            }.toTypedArray(),
-            state.genres,
-            state.favs
-        )
+        is AddBook -> state + (newId to action.book)
+        is RemoveBook -> state.minus(action.id)
+        is ChangeBook ->
+            state.toMutableMap()
+                .apply {
+                    this[action.id] = action.newBook
+                }
         else -> state
+    }
 
+fun authorsReducer(state: AuthorsState, action: RAction, newId: Int = -1) =
+    when (action) {
+        is AddAuthor -> state + (newId to action.author)
+        is RemoveAuthor -> state.minus(action.id)
+        is ChangeAuthor ->
+            state.toMutableMap()
+                .apply {
+                    this[action.id] = action.newAuthor
+                }
+        else -> state
+    }
+
+fun genresReducer(state: GenresState, action: RAction, newId: Int = -1) =
+    state
+
+fun favsReducer(state: FavsState, action: RAction, newId: Int = -1) =
+    when (action) {
+        is ChangeFav ->
+            state.toMutableList().apply {
+                if (this.contains(action.id))
+                    this.remove(action.id)
+                else
+                    this.add(action.id)
+            }.toTypedArray()
+
+        // is RemoveFav -> state.minus(action.id)
+        else -> state
+    }
+
+fun rootReducer(state: State, action: RAction) =
+    when (action) {
+        is AddBook -> {
+            val id = state.books.newId()
+            State(
+                booksReducer(state.books, action, id),
+                authorsReducer(state.authors, action),
+                genresReducer(state.genres, action),
+                favsReducer(state.favs, action)
+            )
+        }
+        is AddAuthor -> {
+            val id = state.authors.newId()
+            State(
+                booksReducer(state.books, action),
+                authorsReducer(state.authors, action, id),
+                genresReducer(state.genres, action),
+                favsReducer(state.favs, action)
+            )
+        }
+        is ChangeFav -> {
+            State(
+                booksReducer(state.books, action),
+                authorsReducer(state.authors, action),
+                genresReducer(state.genres, action),
+                favsReducer(state.favs, action)
+            )
+        }
+        else ->
+            State(
+                booksReducer(state.books, action),
+                authorsReducer(state.authors, action),
+                genresReducer(state.genres, action),
+                favsReducer(state.favs, action)
+            )
     }

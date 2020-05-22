@@ -1,10 +1,48 @@
-package component
+package components
 
+import data.Author
+import data.Book
+import data.Genre
+import hoc.withDisplayName
+import kotlinext.js.getOwnPropertyNames
 import react.*
 import react.dom.*
-import kotlinx.html.js.onClickFunction
 import org.w3c.dom.events.Event
-import data.*
+import react.router.dom.navLink
+
+
+interface GenreTableItemProps : RProps {
+    var genres: Map<Int, Genre>
+}
+
+fun fGenreTableItem () =
+    functionalComponent<GenreTableItemProps> { props ->
+        props.genres.values.mapIndexed { index, genre ->
+            tr {
+                genre.getProperies().mapIndexed { _, prop ->
+                    td {
+                        + prop.toString()
+                    }
+                }
+                td {
+                    navLink("/genres/${index}") {
+                        button(classes = "book-button") {
+                            +"Подробнее"
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+
+fun RBuilder.genreTableItem(
+    genres: Map<Int, Genre>
+) = child(
+    withDisplayName("Genre Table Item", fGenreTableItem())
+) {
+    attrs.genres = genres
+}
 
 interface GenreProps : RProps {
     var genre: Genre

@@ -80,3 +80,16 @@ a {
     width: 64px;
     height: 96px;
 }
+
+.table-root {
+    display: flex;
+    flex-direction: row;
+}
+
+.table-editor {
+    display: flex;
+}
+
+.author-books {
+    margin-left: 20px;
+}

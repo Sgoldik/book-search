@@ -1,8 +1,12 @@
 package redux
 
-class AddAuthor(val name: String, val surname: String): RAction
-class EditAuthor(val index: Int, val firstname: String, val surname: String): RAction
-class DeleteAuthor(val index: Int) : RAction
-class AddBook(val name: String): RAction
-class EditBook(val index: Int, val name: String): RAction
-class DeleteBook(val index: Int): RAction
+import data.*
+
+class AddAuthor(val author: Author): RAction
+class ChangeAuthor(val id: Int, val newAuthor: Author): RAction
+class RemoveAuthor(val id: Int) : RAction
+class AddBook(val book: Book): RAction
+class ChangeBook(val id: Int, val newBook: Book): RAction
+class RemoveBook(val id: Int): RAction
+
+class ChangeFav(val id: Int): RAction

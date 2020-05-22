@@ -12,7 +12,7 @@ data class Author (
     )
 }
 
-val authorList =
+fun authorList() =
     arrayOf(
         Author("Джоан", "Роулинг", "https://im0-tub-ru.yandex.net/i?id=61d4bae88bf5660b56d7feff290ca6f3&n=13"),
         Author("Стивен", "Кинг", "https://avatars.mds.yandex.net/get-zen_doc/1899873/pub_5cd98e2848289800b218c1c6_5cd98f33d3406000b2de37c6/scale_1200"),

@@ -1,53 +1,40 @@
-package component
+package components
 
-import data.*
-import hoc.withDisplayName
+import kotlinx.html.js.onClickFunction
 import org.w3c.dom.events.Event
 import react.*
 import react.dom.*
 import react.functionalComponent
-import react.router.dom.navLink
-import kotlin.reflect.KFunction2
 
-interface AnyTableProps<T> : RProps {
-    var objs: Array<T>
+interface AnyTableProps<T, S, O> : RProps {
+    var objs: Map<Int, T>
     var titles: Array<String>
+    var sub1: Map<Int, S>
+    var sub2: Map<Int, O>
 }
 
-fun <T> fAnyTable(
+fun <T, S, O> fAnyTable(
     name: String,
     path: String,
-    rItem: RBuilder.(Array<T>) -> ReactElement
+    rItem: RBuilder.(Map<Int, T>, Map<Int, S>, Map<Int, O>) -> ReactElement
 ) =
-    functionalComponent<AnyTableProps<T>> {props ->
+    functionalComponent<AnyTableProps<T, S, O>> {props ->
         h2 { +name }
-        table ("any-table") {
-            tbody {
-                tr {
-                    console.log(props.objs)
-                    props.titles.mapIndexed { _, title ->
-                        th {
-                            console.log(title)
-                            +title
+        div ("table-root"){
+            table("any-table") {
+                tbody {
+                    tr {
+                        console.log(props.objs)
+                        props.titles.map { title ->
+                            th {
+                                console.log(title)
+                                +title
+                            }
                         }
                     }
-                }
-                rItem(props.objs)
+                    rItem(props.objs, props.sub1, props.sub2)
 
+                }
             }
         }
-
     }
-
-fun <T> RBuilder.anyTable(
-    rItem: RBuilder.(Array<T>) -> ReactElement,
-    anys: Array<T>,
-    titles: Array<String>,
-    name: String,
-    path: String
-) = child(
-    withDisplayName(name, fAnyTable<T>(name, path, rItem))
-){
-    attrs.objs = anys
-    attrs.titles = titles
-}

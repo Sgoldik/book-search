@@ -1,6 +1,7 @@
 package components
 
-import component.*
+import component.favs
+import containers.*
 import data.*
 import hoc.withDisplayName
 import kotlinext.js.getOwnPropertyNames
@@ -10,10 +11,10 @@ import react.router.dom.*
 import redux.*
 
 interface AppProps : RProps {
-    var books: Array<Book>
-    var authors: Array<Author>
-    var genres: Array<Genre>
-    var store: Store<State, RAction, WrapperAction>
+    var books: Map<Int, Book>
+    var authors: Map<Int, Author>
+    var genres: Map<Int, Genre>
+    var favs: Array<Int>
 }
 
 interface RouteNumberResult : RProps {
@@ -28,8 +29,7 @@ fun fApp () =
                 ul("navigation") {
                     li("navigation-item") { navLink("/books") { +"Книги" } }
                     li("navigation-item") { navLink("/authors") { +"Авторы" } }
-                    li("navigation-item") { navLink("/genres") { +"Жанры" } }
-                    li("navigation-item") { navLink("/fav") { +"Избранные книги" } }
+                    li("navigation-item") { navLink("/favs") { +"Избранные книги" } }
                 }
             }
         }
@@ -39,132 +39,65 @@ fun fApp () =
             route("/books",
                 exact = true,
                 render = {
-                    anyTable(
-                        RBuilder::bookTableItem,
-                        props.store.getState().books,
-                        arrayOf("Превью", "Название", "Автор", "Год издания", "Жанр", "Информация"),
-                        "Книги",
-                        "/books"
-                    )
+                    booksTableContainer { }
                 }
             )
             route("/books/:number",
                 exact = true,
-                render = renderBook(props)
+                render = renderObject(
+                    { props.books[it] },
+                    { index, book ->
+                        bookInfoContainer {
+                            attrs.obj = index to book
+                        }
+                    }
+                )
             )
             route("/authors",
                 exact = true,
                 render = {
-                    anyTable(
-                        RBuilder::authorTableItem,
-                        props.store.getState().authors,
-                        arrayOf("Превью", "Имя автора", "Информация"),
-                        "Авторы",
-                        "/authors"
-                    )
+                    authorsTableContainer {}
                 }
             )
             route("/authors/:number",
                 exact = true,
-                render = renderAuthor(props)
+                render = renderObject(
+                    { props.authors[it] },
+                    { index, author ->
+                        authorInfoContainer {
+                            attrs.obj = index to author
+                        }
+                    }
+                )
             )
-            route("/genres",
+//            route("/genres",
+//                exact = true,
+//                render = {
+//                    genresTableContainer {}
+//                }
+//            )
+//            route("/genres/:number",
+//                exact = true,
+//                render = renderGenre(props)
+//            )
+            route("/favs",
                 exact = true,
-                render = renderGenres(props)
-            )
-            route("/genres/:number",
-                exact = true,
-                render = renderGenre(props)
-            )
-            route("/fav",
-                exact = true,
-                render = renderFavBooks(props)
+                render = {
+                    favsTableContainer { }
+                }
             )
         }
     }
 
-fun RBuilder.renderBook(props: AppProps) =
-    { route_props: RouteResultProps<RouteNumberResult> ->
-        val num = route_props.match.params.number.toIntOrNull() ?: -1
-        val book = props.store.getState().books.getOrNull(num)
-        if (book != null)
-            anyInfo(
-                RBuilder::book,
-                book,
-                num
-            )
-        else
-            p { +"No such book"}
-    }
-
-fun RBuilder.renderAuthor(props: AppProps) =
-    { route_props: RouteResultProps<RouteNumberResult> ->
-        val num = route_props.match.params.number.toIntOrNull() ?: -1
-        val author = props.store.getState().authors.getOrNull(num)
-        if (author != null) {
-            var authorBooks = props.store.getState().books.map { book ->
-                if (book.author == author) book else null
-            }.toTypedArray()
-            anyInfo(
-                RBuilder::author,
-                author,
-                authorBooks
-            )
-        } else {
-            p { +"No such book" }
-        }
-    }
-
-fun RBuilder.renderGenres(props: AppProps) =
-    { ->
-        anyTable(
-            RBuilder::genreTableItem,
-            props.store.getState().genres,
-            arrayOf("Название жанра", "Информация"),
-            "Жанры",
-            "/genres"
-        )
-    }
-fun RBuilder.renderFavBooks(props: AppProps) =
-    { ->
-        if (props.store.getState().favs.isNotEmpty()) {
-            favBooks(
-                props.store.getState().books,
-                1
-            )
-        } else
-            p { +"У вас нет избранных книг."}
-    }
-
-fun RBuilder.renderGenre(props: AppProps) =
-    { route_props: RouteResultProps<RouteNumberResult> ->
-        val num = route_props.match.params.number.toIntOrNull() ?: -1
-        val genre = props.store.getState().genres.getOrNull(num)
-        if (genre != null) {
-            var genreBooks = props.store.getState().books.map { book ->
-                if (book.genre == genre) book else null
-            }.toTypedArray()
-            anyInfo(
-                RBuilder::genre,
-                genre,
-                genreBooks
-            )
-        } else {
-            p { +"Такого жанра нет." }
-        }
-    }
-
-fun RBuilder.app (
-    books: Array<Book>,
-    authors: Array<Author>,
-    genres: Array<Genre>,
-    store: Store<State, RAction, WrapperAction>
+fun <O> RBuilder.renderObject(
+    selector: (Int) -> O?,
+    rElement: (Int, O) -> ReactElement
 ) =
-    child (
-        withDisplayName("App", fApp())
-    ) {
-        attrs.books = books
-        attrs.authors = authors
-        attrs.genres = genres
-        attrs.store = store
+    { route_props: RouteResultProps<RouteNumberResult> ->
+        val num = route_props.match.params.number.toIntOrNull() ?: -1
+        val obj = selector(num)
+        if (obj != null)
+            rElement(num, obj)
+        else
+            p { +"Object not found" }
     }
