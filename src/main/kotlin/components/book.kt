@@ -3,6 +3,7 @@ package components
 import data.*
 import hoc.withDisplayName
 import kotlinext.js.getOwnPropertyNames
+import kotlinx.html.InputType
 import kotlinx.html.id
 import kotlinx.html.js.onClickFunction
 import org.w3c.dom.HTMLInputElement
@@ -70,6 +71,7 @@ interface BookProps : RProps {
     var book: Pair<Int, Book>
     var author: Author
     var genre: Genre
+    var reviews: Map<Int, Review>
     var addFav: (Event) -> Unit
     var isFav: Boolean
 }
@@ -99,18 +101,40 @@ val fBook =
             }
 
         }
+        div ("reviews") {
+            div {
+                h2 {
+                    + "Рецензии"
+                }
+                props.reviews.values.map {
+                    review(it)
+                }
+            }
+            div {
+                h2 {
+                    + "Оставить рецензию"
+                }
+                textArea (classes = "review-field") {
+                }
+                button(classes = "book-button") {
+                    + "Отправить"
+                }
+            }
+        }
     }
 
 fun RBuilder.book(
     book: Pair<Int, Book>,
     author: Author,
     genre: Genre,
+    reviews: Map<Int, Review>,
     addFav: (Event) -> Unit,
     isFav: Boolean
 ) = child(fBook) {
     attrs.book = book
     attrs.author = author
     attrs.genre = genre
+    attrs.reviews = reviews
     attrs.addFav = addFav
     attrs.isFav = isFav
 }
@@ -119,22 +143,3 @@ interface BookEditProps : RProps {
     var book: Pair<Int, Book>
     var onClick: (Book) -> Unit
 }
-
-val fBookEdit =
-    functionalComponent<BookEditProps> { props ->
-        span {
-            input() {
-                attrs.id = "lessonEdit${props.book.first}"
-                attrs.defaultValue = props.book.second.name
-            }
-            button {
-                +"Save"
-                attrs.onClickFunction = {
-                    val inputElement = document
-                        .getElementById("lessonEdit${props.book.first}")
-                            as HTMLInputElement
-                    props.onClick(Book(inputElement.value, 0, "", "", 0))
-                }
-            }
-        }
-    }

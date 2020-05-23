@@ -42,6 +42,13 @@ fun favsReducer(state: FavsState, action: RAction, newId: Int = -1) =
         else -> state
     }
 
+fun reviewsReducer(state: ReviewsState, action: RAction, newId: Int = -1) =
+    when (action) {
+        is AddReview -> state + (newId to action.review)
+        is RemoveReview ->  state.minus(action.id)
+        else -> state
+    }
+
 fun rootReducer(state: State, action: RAction) =
     when (action) {
         is AddBook -> {
@@ -50,6 +57,7 @@ fun rootReducer(state: State, action: RAction) =
                 booksReducer(state.books, action, id),
                 authorsReducer(state.authors, action),
                 genresReducer(state.genres, action),
+                reviewsReducer(state.reviews, action),
                 favsReducer(state.favs, action)
             )
         }
@@ -59,6 +67,7 @@ fun rootReducer(state: State, action: RAction) =
                 booksReducer(state.books, action),
                 authorsReducer(state.authors, action, id),
                 genresReducer(state.genres, action),
+                reviewsReducer(state.reviews, action),
                 favsReducer(state.favs, action)
             )
         }
@@ -67,7 +76,18 @@ fun rootReducer(state: State, action: RAction) =
                 booksReducer(state.books, action),
                 authorsReducer(state.authors, action),
                 genresReducer(state.genres, action),
+                reviewsReducer(state.reviews, action),
                 favsReducer(state.favs, action)
+            )
+        }
+        is AddReview -> {
+            val id = state.reviews.newId()
+            State(
+                booksReducer(state.books, action),
+                authorsReducer(state.authors, action),
+                genresReducer(state.genres, action),
+                reviewsReducer(state.reviews, action, id),
+                favsReducer(state.favs, action, id)
             )
         }
         else ->
@@ -75,6 +95,7 @@ fun rootReducer(state: State, action: RAction) =
                 booksReducer(state.books, action),
                 authorsReducer(state.authors, action),
                 genresReducer(state.genres, action),
+                reviewsReducer(state.reviews, action),
                 favsReducer(state.favs, action)
             )
     }

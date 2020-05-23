@@ -15,9 +15,10 @@ interface AnyInfoDispatchProps : RProps {
     var addFav: (Int) -> (Event) -> Unit
 }
 
-interface AnyInfoStateProps<O, S> : RProps {
+interface AnyInfoStateProps<O, S, T> : RProps {
     var sub1: O
     var sub2: S
+    var sub3: T
     var isFav: Boolean
 }
 
@@ -32,12 +33,15 @@ val bookInfoContainer =
             RAction,
             WrapperAction,
             AnyInfoOwnProps<Book>,
-            AnyInfoStateProps<Author, Genre>,
+            AnyInfoStateProps<Author, Genre, Map<Int, Review>>,
             AnyInfoDispatchProps,
-            AnyInfoProps<Pair<Int, Book>, Author, Genre>>(
+            AnyInfoProps<Pair<Int, Book>, Author, Genre, Map<Int, Review>>>(
         { state, ownProps ->
             sub1 = state.authors.getValue(ownProps.obj.second.author) // author
             sub2 = state.genres.getValue(ownProps.obj.second.genre)
+            sub3 = state.reviews.filter {
+                it.value.book == ownProps.obj.first
+            }
             isFav = state.favs.contains(ownProps.obj.first)
         },
         { dispatch, ownProps ->
@@ -51,9 +55,9 @@ val bookInfoContainer =
     )(
         withDisplayName(
             "LessonInfo",
-            fAnyInfo<Book, Author, Genre>(RBuilder::book)
+            fAnyInfo<Book, Author, Genre, Map<Int, Review>>(RBuilder::book)
         )
-            .unsafeCast<RClass<AnyInfoProps<Pair<Int, Book>, Author, Genre>>>()
+            .unsafeCast<RClass<AnyInfoProps<Pair<Int, Book>, Author, Genre, Map<Int, Review>>>>()
     )
 
 val authorInfoContainer =
@@ -62,9 +66,9 @@ val authorInfoContainer =
             RAction,
             WrapperAction,
             AnyInfoOwnProps<Author>,
-            AnyInfoStateProps<Map<Int,Book>, Map<Int, Genre>>,
+            AnyInfoStateProps<Map<Int,Book>, Map<Int, Genre>, Map<Int,Review>>,
             AnyInfoDispatchProps,
-            AnyInfoProps<Pair<Int, Author>, Book, Genre>>(
+            AnyInfoProps<Pair<Int, Author>, Book, Genre, Map<Int, Review>>>(
         { state, ownProps ->
             sub1 = state.books.filter {
                 it.value.author == ownProps.obj.first
@@ -83,7 +87,7 @@ val authorInfoContainer =
     )(
         withDisplayName(
             "AuthorInfo",
-            fAnyInfo<Author, Map<Int, Book>, Map<Int, Genre>>(RBuilder::author)
+            fAnyInfo<Author, Map<Int, Book>, Map<Int, Genre>, Map<Int,Review>>(RBuilder::author)
         )
-            .unsafeCast<RClass<AnyInfoProps<Pair<Int, Author>, Book, Genre>>>()
+            .unsafeCast<RClass<AnyInfoProps<Pair<Int, Author>, Book, Genre, Map<Int, Review>>>>()
     )

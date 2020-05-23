@@ -10,3 +10,7 @@ class ChangeBook(val id: Int, val newBook: Book): RAction
 class RemoveBook(val id: Int): RAction
 
 class ChangeFav(val id: Int): RAction
+
+class AddReview(val review: Review): RAction
+
+class RemoveReview(val id: Int): RAction

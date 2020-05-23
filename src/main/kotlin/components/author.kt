@@ -58,6 +58,7 @@ interface AuthorProps : RProps {
     var author: Pair<Int, Author>
     var books: Map<Int, Book>
     var genres: Map<Int, Genre>
+    var reviews: Map<Int, Review>
     var addFav: (Event) -> Unit
     var isFav: Boolean
 
@@ -87,6 +88,7 @@ fun RBuilder.author(
     author: Pair<Int, Author>,
     books: Map<Int, Book>,
     genres: Map<Int, Genre>,
+    reviews: Map<Int, Review>,
     addFav: (Event) -> Unit,
     isFav: Boolean
 
@@ -94,6 +96,7 @@ fun RBuilder.author(
     attrs.author = author
     attrs.books = books
     attrs.genres = genres
+    attrs.reviews = reviews
     attrs.addFav = addFav
     attrs.isFav = isFav
 }

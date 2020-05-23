@@ -93,3 +93,13 @@ a {
 .author-books {
     margin-left: 20px;
 }
+
+.reviews {
+    display: flex;
+    flex-directionL row;
+}
+
+.review-field {
+    height: 100px;
+    width: 300px;
+}
