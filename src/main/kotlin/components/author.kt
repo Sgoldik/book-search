@@ -4,10 +4,15 @@ import containers.booksTableContainer
 import data.*
 import hoc.withDisplayName
 import kotlinext.js.getOwnPropertyNames
+import kotlinx.html.id
+import kotlinx.html.js.onClickFunction
+import org.w3c.dom.HTMLInputElement
+import org.w3c.dom.HTMLTextAreaElement
 import react.*
 import react.dom.*
 import org.w3c.dom.events.Event
 import react.router.dom.navLink
+import kotlin.browser.document
 
 
 interface AuthorTableItemProps : RProps {
@@ -57,7 +62,6 @@ fun RBuilder.authorTableItem(
 interface AuthorProps : RProps {
     var author: Pair<Int, Author>
     var books: Map<Int, Book>
-
 }
 
 val fAuthor =
@@ -91,3 +95,4 @@ fun RBuilder.author(
     attrs.author = author
     attrs.books = books
 }
+

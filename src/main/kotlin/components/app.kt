@@ -28,6 +28,7 @@ fun fApp () =
             nav {
                 ul("navigation") {
                     li("navigation-item") { navLink("/books") { +"Книги" } }
+                    li("navigation-item") { navLink("/addBook") { +"Добавить книгу" } }
                     li("navigation-item") { navLink("/authors") { +"Авторы" } }
                     li("navigation-item") { navLink("/favs") { +"Избранные книги" } }
                 }
@@ -52,6 +53,12 @@ fun fApp () =
                         }
                     }
                 )
+            )
+            route("/addBook",
+                exact = true,
+                render = {
+                    addBookContainer { }
+                }
             )
             route("/authors",
                 exact = true,

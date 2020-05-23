@@ -7,6 +7,7 @@ import kotlinx.html.InputType
 import kotlinx.html.id
 import kotlinx.html.js.onClickFunction
 import org.w3c.dom.HTMLInputElement
+import org.w3c.dom.HTMLSelectElement
 import org.w3c.dom.HTMLTextAreaElement
 import react.*
 import react.dom.*
@@ -109,6 +110,7 @@ val fBook =
 
         }
         div ("reviews") {
+            if (props.reviews.isNotEmpty())
             div {
                 h2 {
                     + "Рецензии"
@@ -116,6 +118,8 @@ val fBook =
                 props.reviews.values.map {
                     review(it)
                 }
+            } else p {
+
             }
             div ("review-container"){
                 h2 {
@@ -170,7 +174,107 @@ fun RBuilder.book(
     attrs.addReview = addReview
 }
 
-interface BookEditProps : RProps {
-    var book: Pair<Int, Book>
-    var onClick: (Book) -> Unit
+
+interface AddBookProps : RProps {
+    var authors: Map<Int, Author>
+    var genres: Map<Int, Genre>
+    var addBook: (Book) -> Unit
+}
+
+val fAddBook =
+    functionalComponent<AddBookProps> { props ->
+        div (){
+            h2 {
+                +"Добавить книгу"
+            }
+            h3 {
+                +"Название книги"
+            }
+            input(classes = "review-input") {
+                attrs.id = "book-name-add"
+            }
+            h3 {
+                +"Имя автора"
+            }
+            select(classes = "review-input") {
+                attrs.id = "book-author-add"
+                props.authors.values.mapIndexed { index, author ->
+                    option {
+                        attrs.value = index.toString()
+                        +author.toString()
+                    }
+                }
+            }
+            h3 {
+                +"Жанр"
+            }
+            select(classes = "review-input") {
+                attrs.id = "book-genre-add"
+                props.genres.values.mapIndexed { index, genre ->
+                    option {
+                        attrs.value = index.toString()
+                        +genre.toString()
+                    }
+                }
+            }
+            h3 {
+                +"Год издания"
+            }
+            input(classes = "review-input") {
+                attrs.id = "book-created-add"
+            }
+
+            h3 {
+                +"Ссылка на изображение"
+            }
+            input(classes = "review-input") {
+                attrs.id = "book-image-add"
+            }
+            br {}
+            button(classes = "book-button") {
+                +"Добавить"
+                attrs.onClickFunction = {
+                    console.log("click")
+                    val name = document
+                        .getElementById("book-name-add")
+                            as HTMLInputElement
+                    val author = document
+                        .getElementById("book-author-add")
+                            as HTMLSelectElement
+                    val genre = document
+                        .getElementById("book-genre-add")
+                            as HTMLSelectElement
+                    val created = document
+                        .getElementById("book-created-add")
+                            as HTMLInputElement
+                    val image = document
+                        .getElementById("book-image-add")
+                            as HTMLInputElement
+
+                    // console.log(inputElement.value, textAreaElement.value)
+
+                    props.addBook(
+                        Book(
+                            name.value,
+                            author.value.toInt(),
+                            created.value,
+                            image.value,
+                            genre.value.toInt()
+                        )
+                    )
+                    window.history.back()
+                }
+            }
+        }
+
+    }
+
+fun RBuilder.addBook(
+    authors: Map<Int, Author>,
+    genres: Map<Int, Genre>,
+    addBook: (Book) -> Unit
+) = child(fAddBook) {
+    attrs.authors = authors
+    attrs.genres = genres
+    attrs.addBook = addBook
 }

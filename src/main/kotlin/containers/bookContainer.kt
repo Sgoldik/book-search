@@ -1,10 +1,5 @@
 package containers
-
-import component.AnyInfoProps
-import component.fAnyInfo
-import components.BookProps
-import components.book
-import components.fBook
+import components.*
 import data.*
 import hoc.withDisplayName
 import org.w3c.dom.events.Event
@@ -13,10 +8,7 @@ import react.RClass
 import react.RProps
 import react.invoke
 import react.redux.rConnect
-import redux.AddReview
-import redux.ChangeFav
-import redux.RAction
-import redux.WrapperAction
+import redux.*
 
 interface BookDispatchProps : RProps {
     var addFav: (Int) -> Unit
@@ -67,4 +59,44 @@ val bookContainer =
             fBook
         )
             .unsafeCast<RClass<BookProps>>()
+    )
+
+interface AddBookDispatchProps : RProps {
+    var addBook: (Book) -> Unit
+}
+
+interface AddBookStateProps: RProps {
+    var authors: Map<Int, Author>
+    var genres: Map<Int, Genre>
+}
+
+interface AddBookOwnProps: RProps {
+
+}
+
+val addBookContainer =
+    rConnect<
+            State,
+            RAction,
+            WrapperAction,
+            AddBookOwnProps,
+            AddBookStateProps,
+            AddBookDispatchProps,
+            AddBookProps>(
+        { state, ownProps ->
+            authors = state.authors
+            genres = state.genres
+        },
+        { dispatch, ownProps ->
+            addBook =
+                {
+                    dispatch(AddBook(it))
+                }
+        }
+    )(
+        withDisplayName(
+            "AddBook",
+            fAddBook
+        )
+            .unsafeCast<RClass<AddBookProps>>()
     )

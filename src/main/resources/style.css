@@ -96,7 +96,7 @@ a {
 
 .reviews {
     display: flex;
-    flex-directionL row;
+    flex-direction: row;
 }
 
 .review-field {
@@ -115,4 +115,9 @@ a {
 
 .review-field {
     margin-bottom: 10px;
+}
+
+.add-book-container {
+    display: flex;
+    flex-direction: column;
 }

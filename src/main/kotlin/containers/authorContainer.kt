@@ -1,7 +1,4 @@
 package containers
-
-import component.AnyInfoProps
-import component.fAnyInfo
 import components.AuthorProps
 import components.author
 import components.fAuthor
