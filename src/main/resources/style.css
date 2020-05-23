@@ -103,3 +103,16 @@ a {
     height: 100px;
     width: 300px;
 }
+
+.review-input {
+    margin-bottom: 10px;
+}
+
+.review-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.review-field {
+    margin-bottom: 10px;
+}

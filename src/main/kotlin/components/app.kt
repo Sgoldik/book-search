@@ -47,8 +47,8 @@ fun fApp () =
                 render = renderObject(
                     { props.books[it] },
                     { index, book ->
-                        bookInfoContainer {
-                            attrs.obj = index to book
+                        bookContainer {
+                            attrs.book = index to book
                         }
                     }
                 )
@@ -64,22 +64,12 @@ fun fApp () =
                 render = renderObject(
                     { props.authors[it] },
                     { index, author ->
-                        authorInfoContainer {
-                            attrs.obj = index to author
+                        authorContainer {
+                            attrs.author = index to author
                         }
                     }
                 )
             )
-//            route("/genres",
-//                exact = true,
-//                render = {
-//                    genresTableContainer {}
-//                }
-//            )
-//            route("/genres/:number",
-//                exact = true,
-//                render = renderGenre(props)
-//            )
             route("/favs",
                 exact = true,
                 render = {

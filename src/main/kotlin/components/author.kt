@@ -57,15 +57,14 @@ fun RBuilder.authorTableItem(
 interface AuthorProps : RProps {
     var author: Pair<Int, Author>
     var books: Map<Int, Book>
-    var genres: Map<Int, Genre>
-    var reviews: Map<Int, Review>
-    var addFav: (Event) -> Unit
-    var isFav: Boolean
 
 }
 
 val fAuthor =
     functionalComponent<AuthorProps> { props ->
+        h2 {
+            +props.author.second.toString()
+        }
         div ("book-more"){
             div ("book-more-img") {
                 img (props.author.toString(), props.author.second.photo, classes = "book-more-pic") {}
@@ -86,17 +85,9 @@ val fAuthor =
 
 fun RBuilder.author(
     author: Pair<Int, Author>,
-    books: Map<Int, Book>,
-    genres: Map<Int, Genre>,
-    reviews: Map<Int, Review>,
-    addFav: (Event) -> Unit,
-    isFav: Boolean
+    books: Map<Int, Book>
 
 ) = child(fAuthor) {
     attrs.author = author
     attrs.books = books
-    attrs.genres = genres
-    attrs.reviews = reviews
-    attrs.addFav = addFav
-    attrs.isFav = isFav
 }
